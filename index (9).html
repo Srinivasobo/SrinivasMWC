@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Weight Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #333;
+            margin: 0; /* Added to remove default margin */
+            padding: 0; /* Added to remove default padding */
+        }
+
+        header {
+            background-color: #8bc34a;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            padding-bottom: 60px; /* Adjust as needed */
+        }
+
+        .form-container, .results-container {
+            background-color: #c5e1a5;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            width: 400px;
+        }
+
+        .form-container label, .results-container p {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        .form-container input, .form-container select {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff5722;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #e64a19;
+        }
+
+        .steel-info {
+            display: none;
+            text-align: center;
+            background-color: #a5d6a7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #333;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #8bc34a;
+            color: white;
+        }
+
+        footer {
+            background-color: #388e3c;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <script>
+        function calculateWeight() {
+            const materialType = document.getElementById('materialType').value;
+            const thickness = parseFloat(document.getElementById('thickness').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const length = parseFloat(document.getElementById('length').value);
+
+            let density, coatingThickness = 0, densityZinc = 0, weightCoating = 0;
+            let surfaceArea, volumeCoating;
+
+            if (materialType === 'steel') {
+                density = parseFloat(document.getElementById('densitySteel').value);
+                coatingThickness = parseFloat(document.getElementById('coatingThickness').value);
+                densityZinc = parseFloat(document.getElementById('densityZinc').value);
+
+                surfaceArea = (2 * (length * width + length * thickness + width * thickness)) / 1000000;
+                volumeCoating = surfaceArea * (coatingThickness / 1000000);
+                weightCoating = volumeCoating * densityZinc;
+            } else if (materialType === 'copper') {
+                density = parseFloat(document.getElementById('densityCopper').value);
+            }
+
+            const volumeMaterial = (thickness * width * length) / 1000000000;
+            const weightMaterial = volumeMaterial * density;
+            const totalWeight = weightMaterial + weightCoating;
+            const conversionFactor = totalWeight / (length / 1000);
+
+            document.getElementById('surfaceArea').innerText = surfaceArea ? surfaceArea.toFixed(6) + ' m²' : 'N/A';
+            document.getElementById('volumeCoating').innerText = volumeCoating ? volumeCoating.toFixed(8) + ' m³' : 'N/A';
+            document.getElementById('weightCoating').innerText = weightCoating ? weightCoating.toFixed(8) + ' kg' : 'N/A';
+            document.getElementById('volumeMaterial').innerText = volumeMaterial.toFixed(8) + ' m³';
+            document.getElementById('weightMaterial').innerText = weightMaterial.toFixed(8) + ' kg';
+            document.getElementById('totalWeight').innerText = totalWeight.toFixed(8) + ' kg';
+            document.getElementById('conversionFactor').innerText = conversionFactor.toFixed(9) + ' Kg/m';
+
+            if (materialType === 'steel') {
+                document.getElementById('steelInfo').style.display = 'block';
+            } else {
+                document.getElementById('steelInfo').style.display = 'none';
+            }
+        }
+
+        function updateFields() {
+            const materialType = document.getElementById('materialType').value;
+            const steelFields = document.getElementById('steelFields');
+            const densitySteelField = document.getElementById('densitySteelField');
+            const densityCopperField = document.getElementById('densityCopperField');
+
+            if (materialType === 'steel') {
+                steelFields.style.display = 'block';
+                densitySteelField.style.display = 'block';
+                densityCopperField.style.display = 'none';
+            } else if (materialType === 'copper') {
+                steelFields.style.display = 'none';
+                densitySteelField.style.display = 'none';
+                densityCopperField.style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Material Weight Calculator</h1>
+    </header>
+    <div class="container">
+        <div class="form-container">
+            <form onsubmit="calculateWeight(); return false;">
+                <label for="materialType">Material Type:</label>
+                <select id="materialType" onchange="updateFields()">
+                    <option value="steel">Steel</option>
+                    <option value="copper">Copper</option>
+                </select>
+
+                <label for="thickness">Thickness (mm):</label>
+                <input type="number" id="thickness" required>
+
+                <label for="width">Width (mm):</label>
+                <input type="number" id="width" required>
+
+                <label for="length">Length (mm):</label>
+                <input type="number" id="length" required>
+
+                <div id="densitySteelField">
+                    <label for="densitySteel">Density of Steel (kg/m³):</label>
+                    <input type="number" id="densitySteel" value="7860" required>
+                </div>
+
+                <div id="densityCopperField" style="display:none;">
+                    <label for="densityCopper">Density of Copper (kg/m³):</label>
+                    <input type="number" id="densityCopper" value="8960" required>
+                </div>
+
+                <div id="steelFields">
+                    <label for="coatingThickness">Coating Thickness (microns):</label>
+                    <input type="number" id="coatingThickness">
+
+                    <label for="densityZinc">Density of Zinc (kg/m³):</label>
+                    <input type="number" id="densityZinc" value="7130">
+                </div>
+
+                <button type="submit">Calculate</button>
+            </form>
+        </div>
+
+        <div class="results-container">
+            <p>Surface Area: <span id="surfaceArea"></span></p>
+            <p>Volume of Coating: <span id="volumeCoating"></span></p>
+            <p>Weight of Coating: <span id="weightCoating"></span></p>
+            <p>Volume of Material: <span id="volumeMaterial"></span></p>
+            <p>Weight of Material: <span id="weightMaterial"></span></p>
+            <p>Total Weight: <span id="totalWeight"></span></p>
+            <p>Conversion Factor: <span id="conversionFactor"></span></p>
+        </div>
+
+        <div class="steel-info" id="steelInfo">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Article and its thickness</th>
+                        <th>Local average coating thickness</th>
+                        <th>Average coating thickness</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>> 6 mm</td>
+                        <td>70 µm</td>
+                        <td>85 µm</td>
+                    </tr>
+                    <tr>
+                        <td>> 3 mm but ≤ 6 mm</td>
+                        <td>55 µm</td>
+                        <td>70 µm</td>
+                    </tr>
+                    <tr>
+                        <td>> 1.5 mm but ≤ 3 mm</td>
+                        <td>45 µm</td>
+                        <td>55 µm</td>
+                    </tr>
+                    <tr>
+                        <td>< 1.5 mm</td>
+                        <td>35 µm</td>
+                        <td>45 µm</td>
+                    </tr>
+                    <tr>
+                        <td>castings ≥ 6 mm</td>
+                        <td>70 µm
