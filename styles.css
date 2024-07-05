@@ -1,6 +1,52 @@
-body{
-  padding: 25px;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffc107;
+    color: #333;
 }
-.title {
-	color: #5C6AC4;
+
+header {
+    background-color: #6a1b9a;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.form-container, .results-container {
+    background-color: #7b1fa2;
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+}
+
+.form-container label, .results-container p {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 10px;
+    background-color: #ff5722;
+    border: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #e64a19;
 }
