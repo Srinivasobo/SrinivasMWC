@@ -3,80 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galvanized Steel Calculator</title>
+    <title>Material Weight Calculator</title>
+    <link rel="stylesheet" href="styles.css">
     <script>
+        function updateForm() {
+            const material = document.getElementById('material').value;
+            const steelFields = document.querySelectorAll('.steel-field');
+            const copperFields = document.querySelectorAll('.copper-field');
+
+            if (material === 'steel') {
+                steelFields.forEach(field => field.style.display = 'block');
+                copperFields.forEach(field => field.style.display = 'none');
+            } else if (material === 'copper') {
+                steelFields.forEach(field => field.style.display = 'none');
+                copperFields.forEach(field => field.style.display = 'block');
+            }
+        }
+
         function calculateWeight() {
-            // Get input values
+            const material = document.getElementById('material').value;
             const thickness = parseFloat(document.getElementById('thickness').value);
             const width = parseFloat(document.getElementById('width').value);
             const length = parseFloat(document.getElementById('length').value);
-            const densitySteel = parseFloat(document.getElementById('densitySteel').value);
-            const coatingThickness = parseFloat(document.getElementById('coatingThickness').value);
-            const densityZinc = parseFloat(document.getElementById('densityZinc').value);
+            let density, totalWeight;
 
-            // Surface area calculation (m²)
+            if (material === 'steel') {
+                density = parseFloat(document.getElementById('densitySteel').value);
+                const coatingThickness = parseFloat(document.getElementById('coatingThickness').value);
+                const densityZinc = parseFloat(document.getElementById('densityZinc').value);
+
+                const surfaceArea = (2 * (length * width + length * thickness + width * thickness)) / 1000000;
+                const volumeCoating = surfaceArea * (coatingThickness / 1000000);
+                const weightCoating = volumeCoating * densityZinc;
+
+                const volumeSteel = (thickness * width * length) / 1000000000;
+                const weightSteel = volumeSteel * density;
+
+                totalWeight = weightSteel + weightCoating;
+
+                document.getElementById('volumeCoating').innerText = volumeCoating.toFixed(8) + ' m³';
+                document.getElementById('weightCoating').innerText = weightCoating.toFixed(8) + ' kg';
+                document.getElementById('coatingThicknessDisplay').innerText = coatingThickness + ' microns';
+            } else if (material === 'copper') {
+                density = parseFloat(document.getElementById('densityCopper').value);
+
+                const volumeCopper = (thickness * width * length) / 1000000000;
+                totalWeight = volumeCopper * density;
+
+                document.getElementById('volumeCoating').innerText = 'N/A';
+                document.getElementById('weightCoating').innerText = 'N/A';
+                document.getElementById('coatingThicknessDisplay').innerText = 'N/A';
+            }
+
             const surfaceArea = (2 * (length * width + length * thickness + width * thickness)) / 1000000;
+            const conversionFactor = totalWeight / (length / 1000);
 
-            // Volume of coating (m³)
-            const volumeCoating = surfaceArea * (coatingThickness / 1000000);
-
-            // Weight of coating (kg)
-            const weightCoating = volumeCoating * densityZinc;
-
-            // Volume of steel (m³)
-            const volumeSteel = (thickness * width * length) / 1000000000; // Conversion from mm³ to m³
-
-            // Weight of steel (kg)
-            const weightSteel = volumeSteel * densitySteel;
-
-            // Total weight (kg)
-            const totalWeight = weightSteel + weightCoating;
-
-            // Conversion factor (Kg/m)
-            const conversionFactor = totalWeight / (length / 1000); // Convert length to meters
-
-            // Display results
             document.getElementById('surfaceArea').innerText = surfaceArea.toFixed(6) + ' m²';
-            document.getElementById('volumeCoating').innerText = volumeCoating.toFixed(8) + ' m³';
-            document.getElementById('weightCoating').innerText = weightCoating.toFixed(8) + ' kg';
-            document.getElementById('volumeSteel').innerText = volumeSteel.toFixed(8) + ' m³';
-            document.getElementById('weightSteel').innerText = weightSteel.toFixed(8) + ' kg';
-            document.getElementById('totalWeight').innerText = totalWeight.toFixed(8) + ' kg';
+            document.getElementById('volumeMaterial').innerText = ((thickness * width * length) / 1000000000).toFixed(8) + ' m³';
+            document.getElementById('weightMaterial').innerText = totalWeight.toFixed(8) + ' kg';
             document.getElementById('conversionFactor').innerText = conversionFactor.toFixed(9) + ' Kg/m';
         }
     </script>
 </head>
 <body>
-    <h1>Galvanized Steel Calculator</h1>
-    <form onsubmit="calculateWeight(); return false;">
-        <label for="thickness">Thickness (mm):</label>
-        <input type="number" id="thickness" required><br><br>
+    <header>
+        <h1>Material Weight Calculator</h1>
+    </header>
+    <div class="container">
+        <div class="form-container">
+            <form onsubmit="calculateWeight(); return false;">
+                <label for="material">Material:</label>
+                <select id="material" onchange="updateForm()" required>
+                    <option value="">Select Material</option>
+                    <option value="steel">Steel</option>
+                    <option value="copper">Copper</option>
+                </select>
 
-        <label for="width">Width (mm):</label>
-        <input type="number" id="width" required><br><br>
+                <label for="thickness">Thickness (mm):</label>
+                <input type="number" id="thickness" required>
 
-        <label for="length">Length (mm):</label>
-        <input type="number" id="length" required><br><br>
+                <label for="width">Width (mm):</label>
+                <input type="number" id="width" required>
 
-        <label for="densitySteel">Density of Steel (kg/m³):</label>
-        <input type="number" id="densitySteel" value="7860" required><br><br>
+                <label for="length">Length (mm):</label>
+                <input type="number" id="length" required>
 
-        <label for="coatingThickness">Coating Thickness (microns):</label>
-        <input type="number" id="coatingThickness" required><br><br>
+                <div class="steel-field" style="display: none;">
+                    <label for="densitySteel">Density of Steel (kg/m³):</label>
+                    <input type="number" id="densitySteel" value="7860" required>
 
-        <label for="densityZinc">Density of Zinc (kg/m³):</label>
-        <input type="number" id="densityZinc" value="7130" required><br><br>
+                    <label for="coatingThickness">Coating Thickness (microns):</label>
+                    <input type="number" id="coatingThickness" required>
 
-        <button type="submit">Calculate</button>
-    </form>
+                    <label for="densityZinc">Density of Zinc (kg/m³):</label>
+                    <input type="number" id="densityZinc" value="7130" required>
+                </div>
 
-    <h2>Results</h2>
-    <p>Surface Area: <span id="surfaceArea"></span></p>
-    <p>Volume of Coating: <span id="volumeCoating"></span></p>
-    <p>Weight of Coating: <span id="weightCoating"></span></p>
-    <p>Volume of Steel: <span id="volumeSteel"></span></p>
-    <p>Weight of Steel: <span id="weightSteel"></span></p>
-    <p>Total Weight: <span id="totalWeight"></span></p>
-    <p>Conversion Factor: <span id="conversionFactor"></span></p>
+                <div class="copper-field" style="display: none;">
+                    <label for="densityCopper">Density of Copper (kg/m³):</label>
+                    <input type="number" id="densityCopper" value="8960" required>
+                </div>
+
+                <button type="submit">Calculate</button>
+            </form>
+        </div>
+
+        <div class="results-container">
+            <p>Surface Area: <span id="surfaceArea"></span></p>
+            <p>Volume of Coating: <span id="volumeCoating"></span></p>
+            <p>Weight of Coating: <span id="weightCoating"></span></p>
+            <p>Volume of Material: <span id="volumeMaterial"></span></p>
+            <p>Weight of Material: <span id="weightMaterial"></span></p>
+            <p>Coating Thickness: <span id="coatingThicknessDisplay"></span></p>
+            <p>Conversion Factor: <span id="conversionFactor"></span></p>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2024 Material Weight Calculator. All rights reserved.</p>
+    </footer>
 </body>
 </html>
