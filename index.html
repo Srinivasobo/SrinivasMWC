@@ -9,6 +9,8 @@
             font-family: Arial, sans-serif;
             background-color: white;
             color: #333;
+            margin: 0; /* Added to remove default margin */
+            padding: 0; /* Added to remove default padding */
         }
 
         header {
@@ -22,6 +24,7 @@
             display: flex;
             justify-content: center;
             padding: 20px;
+            padding-bottom: 60px; /* Adjust as needed */
         }
 
         .form-container, .results-container {
@@ -93,7 +96,7 @@
             color: white;
             text-align: center;
             padding: 10px 0;
-            position: absolute;
+            position: fixed;
             bottom: 0;
             width: 100%;
         }
@@ -244,20 +247,4 @@
                     </tr>
                     <tr>
                         <td>castings ≥ 6 mm</td>
-                        <td>70 µm</td>
-                        <td>80 µm</td>
-                    </tr>
-                    <tr>
-                        <td>castings < 6 mm</td>
-                        <td>60 µm</td>
-                        <td>70 µm</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <footer>
-        <p>&copy; 2024 Material Weight Calculator. All rights reserved.</p>
-    </footer>
-</body>
-</html>
+                        <td>70 µm
